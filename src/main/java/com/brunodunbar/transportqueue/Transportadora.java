@@ -1,26 +1,36 @@
 package com.brunodunbar.transportqueue;
 
+import javafx.collections.ObservableList;
+
 public class Transportadora {
 
-    private final PriorityQueue<Encomenda> filaEncomendas;
+    private final PriorityQueue<Carga> filaCargas;
 
     public Transportadora() {
-        filaEncomendas = new PriorityQueue<>(Encomenda.comparator());
+        filaCargas = new PriorityQueue<>(Carga.comparator());
     }
 
-    public void adicionaEncomenda(Encomenda encomenda) {
-        filaEncomendas.offer(encomenda);
+    public void adicionaCarga(Carga carga) {
+        filaCargas.offer(carga);
     }
 
-    public Encomenda proximaEncomenda() throws TransportadoraException {
-        if(!possuiEncomendaNaFila()) {
-            throw new TransportadoraException("Não há nenhuma encomenda na fila");
+    public Carga proximaCarga() throws TransportadoraException {
+        if (!possuiCargaNaFila()) {
+            throw new TransportadoraException("Não há nenhuma carga na fila");
         }
 
-        return filaEncomendas.poll();
+        return filaCargas.poll();
     }
 
-    public boolean possuiEncomendaNaFila() {
-        return filaEncomendas.size() > 0;
+    public boolean possuiCargaNaFila() {
+        return filaCargas.size() > 0;
+    }
+
+    public void removerTodasCargas() {
+        filaCargas.clear();
+    }
+
+    public ObservableList<Carga> getObservableList() {
+        return filaCargas.getObservableList();
     }
 }

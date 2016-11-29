@@ -1,12 +1,14 @@
 package com.brunodunbar.transportqueue;
 
-import java.util.Arrays;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.util.Comparator;
 import java.util.Objects;
 
 public class PriorityQueue<E> {
 
-    private Object[] queue;
+    private ObservableList<E> queue;
 
     private int size;
 
@@ -16,7 +18,7 @@ public class PriorityQueue<E> {
     public PriorityQueue(Comparator<E> comparator) {
         Objects.requireNonNull(comparator, "comparator is required");
         this.comparator = comparator;
-        this.queue = new Object[20];
+        this.queue = FXCollections.observableArrayList();
     }
 
     /**
@@ -32,23 +34,17 @@ public class PriorityQueue<E> {
             throw new NullPointerException();
         }
 
-        //Caso já tenhamos atingindo o limite do array, aumentamos em 50% seu tamanho
-        if (size >= queue.length) {
-            queue = Arrays.copyOf(queue, queue.length + (queue.length >> 1));
-        }
-
-        if (size == 0) {
-            queue[size++] = value;
-        } else {
+        queue.add(value);
+        if (size > 0) {
             //Move os elementos com maior prioridade para o final da lista, para facilitar a remoção
             int pos = size - 1;
-            while (pos >= 0 && comparator.compare(value, (E) queue[pos]) <= 0) {
-                queue[pos + 1] = queue[pos];
+            while (pos >= 0 && comparator.compare(value, (E) queue.get(pos)) <= 0) {
+                queue.set(pos + 1, queue.get(pos));
                 pos--;
             }
-            queue[pos + 1] = value;
-            size++;
+            queue.set(pos + 1, value);
         }
+        size++;
     }
 
     /**
@@ -60,10 +56,7 @@ public class PriorityQueue<E> {
             return null;
         }
 
-        E value = (E) queue[--size];
-        queue[size] = null;
-
-        return value;
+        return queue.remove(--size);
     }
 
     /**
@@ -71,7 +64,7 @@ public class PriorityQueue<E> {
      */
     @SuppressWarnings("unchecked")
     public E peek() {
-        return (E) queue[size - 1];
+        return queue.get(size - 1);
     }
 
     /**
@@ -79,5 +72,14 @@ public class PriorityQueue<E> {
      */
     public int size() {
         return size;
+    }
+
+    public void clear() {
+        queue.clear();
+        size = 0;
+    }
+
+    public ObservableList<E> getObservableList() {
+        return FXCollections.unmodifiableObservableList(queue);
     }
 }
